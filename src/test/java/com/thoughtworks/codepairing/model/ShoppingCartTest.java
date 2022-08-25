@@ -73,4 +73,77 @@ public class ShoppingCartTest {
 
         assertEquals(6, order.getLoyaltyPoints());
     }
+
+    @Test
+    public void shouldCalculatePriceFor20PercentDiscount() {
+        List<Product> products = asList(new Product(PRICE, "DIS_20_ABCD", PRODUCT));
+        ShoppingCart cart = new ShoppingCart(customer, products);
+        Order order = cart.checkout();
+
+        assertEquals(80.0, order.getTotalPrice(), 0.0);
+    }
+
+    @Test
+    public void shouldCalculateLoyaltyPointFor20PercentDiscount() {
+        List<Product> products = asList(new Product(PRICE, "DIS_20_ABCD", PRODUCT));
+        ShoppingCart cart = new ShoppingCart(customer, products);
+        Order order = cart.checkout();
+
+        assertEquals(5, order.getLoyaltyPoints());
+    }
+
+    @Test
+    public void shouldCalculatePriceWithoutFreeExtra() {
+        List<Product> products = asList(
+                new Product(PRICE, "DIS_20_AAA", PRODUCT),
+                new Product(PRICE, "DIS_20_BBB", PRODUCT),
+                new Product(PRICE, "DIS_20_CCC", PRODUCT)
+        );
+        ShoppingCart cart = new ShoppingCart(customer, products);
+        Order order = cart.checkout();
+
+        assertEquals(80.0 * 3, order.getTotalPrice(), 0.0);
+    }
+
+    @Test
+    public void shouldCalculatePriceWithFreeExtra() {
+        List<Product> products = asList(
+                new Product(PRICE, "BULK_BUY_2_GET_1_AAA", PRODUCT),
+                new Product(PRICE, "BULK_BUY_2_GET_1_AAA", PRODUCT),
+                new Product(PRICE, "BULK_BUY_2_GET_1_AAA", PRODUCT)
+        );
+        ShoppingCart cart = new ShoppingCart(customer, products);
+        Order order = cart.checkout();
+
+        assertEquals(100.0 * 2, order.getTotalPrice(), 0.0);
+    }
+
+    @Test
+    public void shouldCalculatePriceWithFreeExtra_A() {
+        List<Product> products = asList(
+                new Product(PRICE, "BULK_BUY_2_GET_1_AAA", PRODUCT),
+                new Product(PRICE, "BULK_BUY_2_GET_1_AAA", PRODUCT),
+                new Product(PRICE, "DIS_20_AAA", PRODUCT)
+        );
+        ShoppingCart cart = new ShoppingCart(customer, products);
+        Order order = cart.checkout();
+
+        assertEquals(100.0 * 2 + 80.0, order.getTotalPrice(), 0.0);
+    }
+
+    @Test
+    public void shouldCalculatePriceWithFreeExtra_B() {
+        List<Product> products = asList(
+                new Product(PRICE, "BULK_BUY_2_GET_1_AAA", PRODUCT),
+                new Product(PRICE, "BULK_BUY_2_GET_1_AAA", PRODUCT),
+                new Product(PRICE, "BULK_BUY_2_GET_1_AAA", PRODUCT),
+                new Product(PRICE, "BULK_BUY_2_GET_1_AAA", PRODUCT),
+                new Product(PRICE, "BULK_BUY_2_GET_1_AAA", PRODUCT),
+                new Product(PRICE, "BULK_BUY_2_GET_1_AAA", PRODUCT)
+        );
+        ShoppingCart cart = new ShoppingCart(customer, products);
+        Order order = cart.checkout();
+
+        assertEquals(100.0 * 4, order.getTotalPrice(), 0.0);
+    }
 }
